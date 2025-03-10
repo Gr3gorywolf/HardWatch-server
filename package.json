@@ -1,0 +1,15 @@
+{
+  "name": "zepos-devices-monitor-backend",
+  "version": "1.0.0",
+  "description": "The backend for zepos devices monitor watch app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "GR3",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
