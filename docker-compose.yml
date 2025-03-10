@@ -5,7 +5,5 @@ services:
     build: .
     ports:
       - "3400:3400"
-    volumes:
-      - .:/app
     environment:
       - NODE_ENV=development

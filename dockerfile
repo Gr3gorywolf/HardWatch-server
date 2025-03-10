@@ -1,11 +1,13 @@
 # Usar la imagen oficial de Node.js
-FROM node:16
+FROM node:18
 
 # Crear y establecer el directorio de trabajo
 WORKDIR /app
 
 # Copiar el archivo de configuración
 COPY config.json /app/config.json
+
+COPY package.json /app/package.json
 
 # Copiar el código de la aplicación
 COPY . /app
