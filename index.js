@@ -1,7 +1,13 @@
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
 const fs = require("fs");
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: { origin: "*" },
+});
 
 // Load appKey from config.json
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
@@ -17,37 +23,53 @@ app.use((req, res, next) => {
   next();
 });
 
-// In-memory storage for device stats, including last activity timestamp
+// Store device connections
+const devices = new Map();
+
+// WebSocket authentication
+io.use((socket, next) => {
+  const { appKey, deviceName } = socket.handshake.auth;
+  if (appKey !== APP_KEY) {
+    return next(new Error("Invalid appKey"));
+  }
+  devices.set(deviceName, socket);
+  console.log(`Device connected: ${deviceName}`);
+  socket.on("disconnect", () => {
+    devices.delete(deviceName);
+    console.log(`Device disconnected: ${deviceName}`);
+  });
+  next();
+});
+
+// In-memory storage for device stats
 const devicesStats = new Map();
-const DEVICE_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 /**
  * POST /send-stats-data
- * Receives device stats and stores them in memory with a timestamp.
+ * Receives device stats and stores them in memory.
  */
 app.post("/send-stats-data", (req, res) => {
   const { name, cpuUsage, gpuUsage, ramUsage, diskTotal, ...rest } = req.body;
   if (!name) {
     return res.status(400).json({ error: "Missing device name" });
   }
-  console.log(`Received stats from ${name}:`, req.body);
 
-  const timestamp = Date.now();
-  devicesStats.set(name, { name, cpuUsage, gpuUsage, ramUsage, diskTotal, ...rest, timestamp });
+  devicesStats.set(name, { name, cpuUsage, gpuUsage, ramUsage, diskTotal, ...rest });
   res.json({ message: "Device stats saved" });
 });
 
 /**
  * GET /get-devices-stats
- * Returns only name, cpuUsage, gpuUsage, ramUsage, and diskTotal for each device.
+ * Returns summarized data of all devices.
  */
 app.get("/get-devices-stats", (req, res) => {
-  const devicesSummary = Array.from(devicesStats.values()).map(({ name, cpuUsage, gpuUsage, ramUsage, diskTotal }) => ({
+  const devicesSummary = Array.from(devicesStats.values()).map(({ name, cpuUsage, gpuUsage, ramUsage, diskTotal, platform }) => ({
     name,
     cpuUsage,
     gpuUsage,
     ramUsage,
     diskTotal,
+    platform,
   }));
 
   res.json(devicesSummary);
@@ -55,7 +77,7 @@ app.get("/get-devices-stats", (req, res) => {
 
 /**
  * GET /get-device-stats/:deviceId
- * Returns the complete information of a specified device.
+ * Returns full stats of a specific device.
  */
 app.get("/get-device-stats/:deviceId", (req, res) => {
   const deviceName = decodeURIComponent(req.params.deviceId);
@@ -69,22 +91,22 @@ app.get("/get-device-stats/:deviceId", (req, res) => {
 });
 
 /**
- * Function to remove devices that have not sent data in the last 5 minutes.
+ * POST /send-action
+ * Sends an action to a specific device via WebSockets.
  */
-function removeInactiveDevices() {
-  const now = Date.now();
-  for (let [name, device] of devicesStats) {
-    if (now - device.timestamp > DEVICE_TIMEOUT) {
-      console.log(`Removing inactive device: ${name}`);
-      devicesStats.delete(name);
-    }
+app.post("/send-action/:deviceId", (req, res) => {
+  const deviceName = decodeURIComponent(req.params.deviceId);
+  const { action } = req.body;
+  console.log(`Sending action "${action}" to ${deviceName}`);
+  if (!devices.has(deviceName)) {
+    return res.status(404).json({ error: "Device not connected" });
   }
-}
-
-// Periodically clean up inactive devices (every minute)
-setInterval(removeInactiveDevices, 60 * 1000); // 1 minute interval
+  
+  devices.get(deviceName).emit("execute-action", { action });
+  res.json({ message: `Action "${action}" sent to ${deviceName}` });
+});
 
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
