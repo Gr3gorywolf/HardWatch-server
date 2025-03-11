@@ -35,6 +35,7 @@ io.use((socket, next) => {
   devices.set(deviceName, socket);
   console.log(`Device connected: ${deviceName}`);
   socket.on("disconnect", () => {
+    devicesStats.delete(deviceName);
     devices.delete(deviceName);
     console.log(`Device disconnected: ${deviceName}`);
   });
@@ -101,7 +102,7 @@ app.post("/send-action/:deviceId", (req, res) => {
   if (!devices.has(deviceName)) {
     return res.status(404).json({ error: "Device not connected" });
   }
-  
+
   devices.get(deviceName).emit("execute-action", { action });
   res.json({ message: `Action "${action}" sent to ${deviceName}` });
 });
