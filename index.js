@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const fs = require("fs");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
@@ -9,13 +10,17 @@ const io = socketIo(server, {
   cors: { origin: "*" },
 });
 
+// CORS Middleware
+app.use(cors());
+
+app.use(express.json());
+
 // Load appKey from config.json
 const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 const PORT = config.port;
 const APP_KEY = config.appKey;
 
-// Middleware to parse JSON and validate appKey
-app.use(express.json());
+// Middleware to validate appKey
 app.use((req, res, next) => {
   if (req.headers["appkey"] !== APP_KEY) {
     return res.status(403).json({ error: "Invalid appKey" });
