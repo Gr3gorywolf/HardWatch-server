@@ -38,6 +38,7 @@ jobs:
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: multi-monitor-web-gh-pages
           path: ./dist/apps/web/frontend
 
   release:
@@ -64,5 +65,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: v1.0.0-${{ github.run_number }}
-          files: ./dist/apps/web/frontend/**/*
+          artifacts: multi-monitor-web
 
