@@ -39,7 +39,7 @@ jobs:
             VERSION=$(node -p "require('./package.json').version")
             RELEASE_NAME="multi-devices-monitor-v${VERSION}.zip"
             mkdir -p multi-devices-monitor
-            cp -r dist assets package.json plugin.json main.py README.md LICENSE multi-devices-monitor/
+            cp -r dist/apps/web multi-devices-monitor/
             zip -r $RELEASE_NAME multi-devices-monitor
       - name: Upload Web Artifact
         uses: actions/upload-artifact@v4
