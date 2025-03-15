@@ -49,6 +49,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: v1.0.0-${{ github.run_number }}
-          artifacts:  multi-monitor-web
+          files: ./dist/apps/web/*
 
 
