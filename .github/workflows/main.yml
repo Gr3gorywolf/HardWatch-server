@@ -32,7 +32,7 @@ jobs:
       - name: Upload Web Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: web-app
+          name: multi-monitor-web
           path: ./dist/apps/web
 
       - name: Upload GitHub Pages Artifact
