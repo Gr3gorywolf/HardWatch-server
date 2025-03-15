@@ -1,0 +1,136 @@
+// Mock data for all devices
+export const mockDevices = [
+    {
+      id: "device-1",
+      name: "GR3-MAIN-PC",
+      cpuUsage: 12.5,
+      gpuUsage: 18,
+      ramUsage: 42.7,
+      diskUsage: 45.2, // Added disk usage percentage
+      diskTotal: 13.5, // In TB
+      platform: "Windows",
+    },
+    {
+      id: "device-2",
+      name: "GR3-SERVER",
+      cpuUsage: 45.8,
+      gpuUsage: 5.2,
+      ramUsage: 60.3,
+      diskUsage: 72.1,
+      diskTotal: 8.0, // In TB
+      platform: "Linux",
+    },
+    {
+      id: "device-3",
+      name: "GR3-WORKSTATION",
+      cpuUsage: 78.2,
+      gpuUsage: 92.5,
+      ramUsage: 65.7,
+      diskUsage: 38.9,
+      diskTotal: 4.0, // In TB
+      platform: "Windows",
+    },
+    {
+      id: "device-4",
+      name: "GR3-LAPTOP",
+      cpuUsage: 35.6,
+      gpuUsage: 12.3,
+      ramUsage: 48.9,
+      diskUsage: 62.4,
+      diskTotal: 1.0, // In TB
+      platform: "macOS",
+    },
+  ]
+  
+  // Mock data for individual device details
+  export const mockDeviceDetails = {
+    "device-1": {
+      name: "GR3-MAIN-PC",
+      cpuUsage: 12.5,
+      gpuUsage: 18,
+      ramUsage: 42.7,
+      diskTotal: 13.5,
+      diskUsage: 45.2,
+      os: "Windows-10-10.0.19045-SP0",
+      cpu: "12th Gen Intel(R) Core(TM) i9-12900K 16c/24t",
+      gpu: "NVIDIA GeForce RTX 3080",
+      ram: "34GB / 79GB",
+      disk: "6.1TB / 13.5TB",
+      cpuTemp: null,
+      gpuTemp: 41,
+      platform: "Windows",
+      actionables: [
+        { name: "Code", action: "code" },
+        { name: "Youtube", action: "start chrome https://www.youtube.com/" },
+        { name: "Previous Music", action: "nircmd sendkeypress media_prev_track" },
+        { name: "Next Music", action: "nircmd sendkeypress media_next_track" },
+        { name: "Vol+", action: "nircmd changesysvolume 8000" },
+        { name: "Vol-", action: "nircmd changesysvolume -8000" },
+      ],
+    },
+    "device-2": {
+      name: "GR3-SERVER",
+      cpuUsage: 45.8,
+      gpuUsage: 5.2,
+      ramUsage: 60.3,
+      diskTotal: 8.0,
+      diskUsage: 72.1,
+      os: "Ubuntu-20.04-LTS",
+      cpu: "AMD EPYC 7543 32-Core Processor",
+      gpu: "NVIDIA Tesla T4",
+      ram: "96GB / 128GB",
+      disk: "5.8TB / 8.0TB",
+      cpuTemp: 58,
+      gpuTemp: 45,
+      platform: "Linux",
+      actionables: [
+        { name: "Restart", action: "sudo reboot" },
+        { name: "Update", action: "sudo apt update && sudo apt upgrade -y" },
+        { name: "Check Logs", action: "journalctl -xe" },
+      ],
+    },
+    "device-3": {
+      name: "GR3-WORKSTATION",
+      cpuUsage: 78.2,
+      gpuUsage: 92.5,
+      ramUsage: 65.7,
+      diskTotal: 4.0,
+      diskUsage: 38.9,
+      os: "Windows-11-Pro-22H2",
+      cpu: "AMD Ryzen 9 5950X 16c/32t",
+      gpu: "NVIDIA GeForce RTX 3090",
+      ram: "48GB / 64GB",
+      disk: "1.6TB / 4.0TB",
+      cpuTemp: 68,
+      gpuTemp: 72,
+      platform: "Windows",
+      actionables: [
+        { name: "Blender", action: "start blender" },
+        { name: "Photoshop", action: "start photoshop" },
+        { name: "Sleep", action: "rundll32.exe powrprof.dll,SetSuspendState 0,1,0" },
+      ],
+    },
+    "device-4": {
+      name: "GR3-LAPTOP",
+      cpuUsage: 35.6,
+      gpuUsage: 12.3,
+      ramUsage: 48.9,
+      diskTotal: 1.0,
+      diskUsage: 62.4,
+      os: "macOS-Ventura-13.4",
+      cpu: "Apple M2 Pro 10-core",
+      gpu: "Apple M2 Pro 16-core GPU",
+      ram: "16GB / 32GB",
+      disk: "0.62TB / 1.0TB",
+      cpuTemp: 42,
+      gpuTemp: 40,
+      platform: "macOS",
+      actionables: [
+        { name: "Terminal", action: "open -a Terminal" },
+        { name: "Safari", action: "open -a Safari" },
+        { name: "Sleep", action: "pmset sleepnow" },
+      ],
+    },
+  }
+  
+  

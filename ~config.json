@@ -1,4 +1,4 @@
 {
     "appKey":"<Your App Key>",
-    "port": 3400
+    "useFrontendCdn": false
 }

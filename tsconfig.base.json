@@ -1,0 +1,26 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "target": "ES6",
+    "module": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@types": ["libs/types/src/index.ts"]
+    }
+  },
+  "references": [
+    {
+      "path": "./apps/frontend/tsconfig.json"
+    },
+    {
+      "path": "./apps/backend/tsconfig.json"
+    },
+    {
+      "path": "./libs/types/tsconfig.json"
+    },
+  ],
+  "exclude": ["node_modules"]
+}
