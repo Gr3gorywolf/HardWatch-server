@@ -23,4 +23,4 @@ RUN npm run build
 EXPOSE 3400
 
 # Comando para ejecutar la aplicación
-CMD ["node", "./dist/apps/web/index.js"]
+CMD ["node", "/app/dist/apps/web/index.js"]
