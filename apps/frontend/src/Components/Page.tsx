@@ -1,5 +1,5 @@
-import {  Loader } from 'lucide-react';
 import { FC } from 'react';
+import { Loader } from './Loader';
 
 interface props {
   children: React.JSX.Element;
