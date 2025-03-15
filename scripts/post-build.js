@@ -8,6 +8,7 @@ const DEST_DIR = path.join(ROOT_DIR, "dist/apps/web");
 // Archivos y carpetas a copiar
 const FILES_TO_COPY = [
   { src: path.join(ROOT_DIR, "~config.json"), dest: path.join(DEST_DIR, "~config.json") },
+  { src: path.join(ROOT_DIR, "config.json"), dest: path.join(DEST_DIR, "config.json") },
   { src: path.join(ROOT_DIR, "docker"), dest: path.join(DEST_DIR) },
 ];
 

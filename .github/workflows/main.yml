@@ -55,13 +55,14 @@ jobs:
         id: date
         run: echo "RELEASE_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: v1.0.0-${{ github.run_number }}
-          artifacts: multi-monitor-web.zip
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/apps/web/frontend
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v1.0.0-${{ github.run_number }}
+          artifacts: multi-monitor-web
+
