@@ -29,17 +29,24 @@ jobs:
       - name: Build App
         run: npm run build
 
-      - name: Upload Web Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: multi-monitor-web
-          path: ./dist/apps/web
-
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           name: multi-monitor-web-gh-pages
           path: ./dist/apps/web/frontend
+      - name: Create release zip
+        run: |
+            VERSION=$(node -p "require('./package.json').version")
+            RELEASE_NAME="multi-devices-monitor-v${VERSION}.zip"
+            mkdir -p multi-devices-monitor
+            cp -r dist assets package.json plugin.json main.py README.md LICENSE multi-devices-monitor/
+            zip -r $RELEASE_NAME multi-devices-monitor
+      - name: Upload Web Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: multi-monitor-web
+          path: multi-devices-monitor-v*.zip
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -49,6 +56,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: v1.0.0-${{ github.run_number }}
-          artifacts: multi-monitor-web.zip
+          artifacts: multi-devices-monitor-v*.zip
 
 
