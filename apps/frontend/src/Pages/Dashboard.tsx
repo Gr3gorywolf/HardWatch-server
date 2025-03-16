@@ -43,7 +43,7 @@ function Dashboard() {
               <Card
                 key={device.id || `device-${index}`}
                 className="bg-[#2a2a2a] border-none hover:bg-[#333333] transition-colors cursor-pointer"
-                onClick={() => handleDeviceClick(device.name)}
+                onClick={() => handleDeviceClick(device.id)}
               >
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2">
