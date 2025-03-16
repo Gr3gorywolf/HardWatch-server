@@ -13,6 +13,10 @@ curl -L -o $zip_file $repo_url
 echo "Extracting the file..."
 unzip -o $zip_file -d $extract_dir
 
+rm $zip_file
+
+cd $extract_dir
+
 # Ask if you want to run docker-compose or npm
 echo "Do you want to run docker-compose up -d? (y/n)"
 read docker_choice
