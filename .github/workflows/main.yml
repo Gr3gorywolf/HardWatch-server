@@ -37,15 +37,16 @@ jobs:
       - name: Create release zip
         run: |
             VERSION=$(node -p "require('./package.json').version")
-            RELEASE_NAME="multi-devices-monitor-v${VERSION}.zip"
+            RELEASE_NAME="multi-devices-monitor.zip"
             mkdir -p multi-devices-monitor
-            cp -r dist/apps/web multi-devices-monitor/
-            zip -r $RELEASE_NAME multi-devices-monitor
+            cp -r dist/apps/web/* multi-devices-monitor/
+            cd multi-devices-monitor
+            zip -r $RELEASE_NAME ./
       - name: Upload Web Artifact
         uses: actions/upload-artifact@v4
         with:
           name: multi-monitor-web
-          path: multi-devices-monitor-v*.zip
+          path: multi-devices-monitor.zip
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -56,6 +57,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: v1.0.0-${{ github.run_number }}
-          artifacts: multi-devices-monitor-v*.zip
+          artifacts: multi-devices-monitor.zip
 
 
