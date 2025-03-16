@@ -11,11 +11,14 @@ import {
   HardDrive,
   Server,
   MemoryStickIcon as Memory,
+  BatteryFull,
+  BatteryCharging,
 } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useGetDevices } from '../Hooks/useGetDevices';
 import { Page } from '../Components/Page';
 import { Header } from '../Components/Header';
+import { useEffect } from 'react';
 function Dashboard() {
   const navigate = useNavigate();
   const { data: devices, isLoading: loading, error } = useGetDevices();
@@ -26,14 +29,21 @@ function Dashboard() {
 
   console.log(error);
 
+  useEffect(() => {
+    if (!localStorage.getItem('appKey')) {
+      navigate('/login');
+    }
+  }, []);
+
   if (error?.response?.status === 403) {
     return <Navigate to="/login" />;
   }
 
   return (
-    <Page header={
-      <Header title='Device Monitoring Dashboard' />
-    } isLoading={loading || !devices}>
+    <Page
+      header={<Header title="Device Monitoring Dashboard" />}
+      isLoading={loading || !devices}
+    >
       <>
         <h2 className="text-2xl font-bold mb-6">All Devices</h2>
 
@@ -47,7 +57,6 @@ function Dashboard() {
               >
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2">
-                    <Server className="h-5 w-5 text-[#4caf50]" />
                     {device.name}
                   </CardTitle>
                   <p className="text-sm text-gray-400">{device.platform}</p>
@@ -95,8 +104,6 @@ function Dashboard() {
                         indicatorClassName="bg-[#4caf50]"
                       />
                     </div>
-
-                    {/* Changed to show disk usage percentage with progress bar */}
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="flex items-center gap-1">
@@ -110,6 +117,21 @@ function Dashboard() {
                         indicatorClassName="bg-[#4caf50]"
                       />
                     </div>
+                    {device.battery && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="flex items-center gap-1">
+                            {device.isCharging? <BatteryCharging className="h-4 w-4" /> : <BatteryFull className="h-4 w-4" />} Battery
+                          </span>
+                          <span>{Math.floor(device.battery)}% {device.isCharging && "- AC"}</span>
+                        </div>
+                        <Progress
+                          value={Math.floor(device.battery)}
+                          className="h-2 bg-gray-700"
+                          indicatorClassName="bg-[#4caf50]"
+                        />
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

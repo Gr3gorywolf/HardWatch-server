@@ -22,10 +22,16 @@ import { Button } from '../Components/ui/button';
 import { useGetDevice } from '../Hooks/useGetDevice';
 import { Page } from '../Components/Page';
 import { Header } from '../Components/Header';
+import { sendAction } from '../Api/endpoints/devicesApi';
+import { useState } from 'react';
+import { useToast } from '../Hooks/use-toast';
+import { Progress } from '../Components/ui/progress';
 
 export default function DeviceDetail() {
   const navigate = useNavigate();
   const params = useParams();
+  const { toast } = useToast();
+  const [isSendingAction, setIsSendingAction] = useState(false);
   const {
     data: deviceStats,
     isLoading: loading,
@@ -36,10 +42,23 @@ export default function DeviceDetail() {
     navigate('/');
   };
 
-  const handleAction = (action: string) => {
-    console.log(`Executing action: ${action}`);
-    // In a real app, this would send a request to execute the action on the device
-    alert(`Action requested: ${action}`);
+  const handleAction = async (action: string) => {
+    setIsSendingAction(true);
+    try{
+       await sendAction(deviceStats?.id ?? "", action);
+       toast({
+        title: 'Action triggered',
+        duration: 2000,
+      });
+    }catch(e){
+      toast({
+        title: 'Failed to send action',
+        description: e?.message ?? "",
+        duration: 2000,
+        variant: 'destructive',
+      });
+    }
+    setIsSendingAction(false);
   };
   if (error?.response?.status === 403) {
     return <Navigate to="/login" />;
@@ -204,6 +223,17 @@ export default function DeviceDetail() {
                 </h3>
                 <p>{deviceStats.platform}</p>
               </div>
+              {deviceStats.battery && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-1">
+                    Battery
+                  </h3>
+                  <p>
+                    {deviceStats.battery}%{' '}
+                    {deviceStats.isCharging && '- Charging'}
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -224,8 +254,9 @@ export default function DeviceDetail() {
                   <Button
                     key={index}
                     variant="outline"
+                    disabled={isSendingAction}
                     className="bg-[#333333] border-[#4caf50] text-white hover:bg-[#4caf50] hover:text-white transition-colors"
-                    onClick={() => handleAction(action.action)}
+                    onClick={() => handleAction(action.name)}
                   >
                     {action.name}
                   </Button>
