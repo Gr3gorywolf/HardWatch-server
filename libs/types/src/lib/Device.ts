@@ -4,6 +4,8 @@ export interface Device {
     cpuUsage: number
     gpuUsage: number
     ramUsage: number
-    diskTotal: number
+    diskUsage: number
     platform: string
+    battery?: number,
+    isCharging?: boolean
   }

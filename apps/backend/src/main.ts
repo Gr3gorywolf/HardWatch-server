@@ -5,6 +5,7 @@ import fs from "fs";
 import cors from "cors";
 import path from "path";
 import DevicesRouter from "./routes/devices";
+import { DeviceStats } from "@types";
 export const app = express();
 const server = http.createServer(app);
 const io = new socketIo.Server(server, {
@@ -26,31 +27,25 @@ let indexHtmlFile = path.join(frontendPath, "index.html");
 // Store device connections
 export const devices = new Map();
 // In-memory storage for device stats
-export const devicesStats = new Map();
+export const devicesStats = new Map<string, DeviceStats>();
 
 if (USE_FRONTEND_CDN || !fs.existsSync(indexHtmlFile)) {
   frontendPath = path.resolve("assets");
   indexHtmlFile = path.join(frontendPath, "cdn-index.html");
 }
-// Middleware to validate appKey
-
-
-
-
-
 
 // WebSocket authentication
 io.use((socket, next) => {
-  const { appKey, deviceName } = socket.handshake.auth;
+  const { appKey, id } = socket.handshake.auth;
   if (appKey !== APP_KEY) {
     return next(new Error("Invalid appKey"));
   }
-  devices.set(deviceName, socket);
-  console.log(`Device connected: ${deviceName}`);
+  devices.set(id, socket);
+  console.log(`Device connected: ${id}`);
   socket.on("disconnect", () => {
-    devicesStats.delete(deviceName);
-    devices.delete(deviceName);
-    console.log(`Device disconnected: ${deviceName}`);
+    devicesStats.delete(id);
+    devices.delete(id);
+    console.log(`Device disconnected: ${id}`);
   });
   next();
 });

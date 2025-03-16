@@ -154,7 +154,7 @@ export default function DeviceDetail() {
             </CardHeader>
             <CardContent className="flex flex-col items-center">
               <CircularProgressIndicator
-                value={Math.floor(deviceStats.diskTotal)}
+                value={Math.floor(deviceStats.diskUsage)}
                 size={150}
                 strokeWidth={10}
                 color="#4caf50"

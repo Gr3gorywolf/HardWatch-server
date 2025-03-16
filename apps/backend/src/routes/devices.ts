@@ -1,5 +1,7 @@
-import {  APP_KEY, devices, devicesStats } from "../main";
-import  {Router} from "express";
+import { DeviceStats } from "@types";
+import { APP_KEY, devices, devicesStats } from "../main";
+import { Router } from "express";
+import { filterDeviceData, filterDeviceStatsData } from "../utils/devices";
 const DevicesRouter = Router()
 
 DevicesRouter.use((req, res, next) => {
@@ -14,13 +16,13 @@ DevicesRouter.use((req, res, next) => {
  * Receives device stats and stores them in memory.
  */
 DevicesRouter.post("/send-stats-data", (req, res) => {
-  const { name, cpuUsage, gpuUsage, ramUsage, diskTotal, ...rest } = req.body;
-  if (!name) {
-    res.status(400).json({ error: "Missing device name" });
+  const {id } = req.body as DeviceStats;
+  if (!id) {
+    res.status(400).json({ error: "Missing device id" });
     return;
   }
-
-  devicesStats.set(name, { name, cpuUsage, gpuUsage, ramUsage, diskTotal, ...rest });
+  const filteredData = filterDeviceStatsData(req.body);
+  devicesStats.set(id, filteredData);
   res.json({ message: "Device stats saved" });
 });
 
@@ -29,14 +31,7 @@ DevicesRouter.post("/send-stats-data", (req, res) => {
  * Returns summarized data of all devices.
  */
 DevicesRouter.get("/get-devices-stats", (req, res) => {
-  const devicesSummary = Array.from(devicesStats.values()).map(({ name, cpuUsage, gpuUsage, ramUsage, diskTotal, platform }) => ({
-    name,
-    cpuUsage,
-    gpuUsage,
-    ramUsage,
-    diskTotal,
-    platform,
-  }));
+  const devicesSummary = Array.from(devicesStats.values()).map((stat)=>filterDeviceData(stat));
 
   res.json(devicesSummary);
 });
@@ -46,8 +41,8 @@ DevicesRouter.get("/get-devices-stats", (req, res) => {
  * Returns full stats of a specific device.
  */
 DevicesRouter.get("/get-device-stats/:deviceId", (req, res) => {
-  const deviceName = decodeURIComponent(req.params.deviceId);
-  const deviceStats = devicesStats.get(deviceName);
+  const deviceId = decodeURIComponent(req.params.deviceId);
+  const deviceStats = devicesStats.get(deviceId);
 
   if (!deviceStats) {
     res.status(404).json({ error: "Device not found" });
@@ -62,16 +57,16 @@ DevicesRouter.get("/get-device-stats/:deviceId", (req, res) => {
  * Sends an action to a specific device via WebSockets.
  */
 DevicesRouter.post("/send-action/:deviceId", (req, res) => {
-  const deviceName = decodeURIComponent(req.params.deviceId);
+  const deviceId = decodeURIComponent(req.params.deviceId);
   const { action } = req.body;
-  console.log(`Sending action "${action}" to ${deviceName}`);
-  if (!devices.has(deviceName)) {
+  console.log(`Sending action "${action}" to ${deviceId}`);
+  if (!devices.has(deviceId)) {
     res.status(404).json({ error: "Device not connected" });
     return
   }
 
-  devices.get(deviceName).emit("execute-action", { action });
-  res.json({ message: `Action "${action}" sent to ${deviceName}` });
+  devices.get(deviceId).emit("execute-action", { action });
+  res.json({ message: `Action "${action}" sent to ${deviceId}` });
 });
 
 

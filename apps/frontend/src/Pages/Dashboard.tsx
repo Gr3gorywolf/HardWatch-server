@@ -102,10 +102,10 @@ function Dashboard() {
                         <span className="flex items-center gap-1">
                           <HardDrive className="h-4 w-4" /> Disk
                         </span>
-                        <span>{Math.floor(device.diskTotal)}%</span>
+                        <span>{Math.floor(device.diskUsage)}%</span>
                       </div>
                       <Progress
-                        value={Math.floor(device.diskTotal)}
+                        value={Math.floor(device.diskUsage)}
                         className="h-2 bg-gray-700"
                         indicatorClassName="bg-[#4caf50]"
                       />
