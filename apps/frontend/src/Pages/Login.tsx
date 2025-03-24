@@ -62,11 +62,11 @@ function Login() {
     <div className="min-h-screen bg-[#212121] text-white flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-[#2a2a2a] border-none shadow-lg">
         <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-6">
-            <Server className="h-12 w-12 text-[#4caf50]" />
+          <div className="flex items-center justify-center mb-2">
+            <img src="/assets/img/icon.png" alt="App icon" className="h-12 w-12 object-cover text-[#4caf50]" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">
-            Device Monitoring
+            PCSpecTrack
           </CardTitle>
           <CardDescription className="text-center text-gray-400">
             Enter your App Key to access the monitoring dashboard

@@ -57,7 +57,7 @@ function Dashboard() {
                 onClick={() => handleDeviceClick(device.id)}
               >
                 <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-3 items-center">
+                  <CardTitle className="flex items-center gap-3">
                     <DeviceTypeIcon deviceType={device.type} className='h-6 w-6 text-[#4caf50]' /> {device.name}
                   </CardTitle>
                   <p className="text-sm text-gray-400">{device.platform}</p>
