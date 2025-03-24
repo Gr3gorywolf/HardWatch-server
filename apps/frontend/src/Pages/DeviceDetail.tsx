@@ -17,7 +17,7 @@ import {
   Play,
 } from 'lucide-react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { CircularProgressIndicator } from '../Components/circular-progress-indicator';
+import { CircularProgressIndicator } from '../Components/CircularProgressIndicator';
 import { Button } from '../Components/ui/button';
 import { useGetDevice } from '../Hooks/useGetDevice';
 import { Page } from '../Components/Page';
@@ -26,6 +26,7 @@ import { sendAction } from '../Api/endpoints/devicesApi';
 import { useState } from 'react';
 import { useToast } from '../Hooks/use-toast';
 import { Progress } from '../Components/ui/progress';
+import { DeviceTypeIcon } from '../Components/DeviceTypeIcon';
 
 export default function DeviceDetail() {
   const navigate = useNavigate();
@@ -89,6 +90,7 @@ export default function DeviceDetail() {
         <Header
           title={deviceStats?.name ?? 'Device Statistics'}
           subTitle={deviceStats?.os ?? ''}
+          icon={<DeviceTypeIcon deviceType={deviceStats?.type} className='h-7 w-7 text-[#4caf50]' />}
           handleBack={handleBack}
         />
       }

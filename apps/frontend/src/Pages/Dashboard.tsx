@@ -19,6 +19,7 @@ import { useGetDevices } from '../Hooks/useGetDevices';
 import { Page } from '../Components/Page';
 import { Header } from '../Components/Header';
 import { useEffect } from 'react';
+import { DeviceTypeIcon } from '../Components/DeviceTypeIcon';
 function Dashboard() {
   const navigate = useNavigate();
   const { data: devices, isLoading: loading, error } = useGetDevices();
@@ -41,11 +42,11 @@ function Dashboard() {
 
   return (
     <Page
-      header={<Header title="Device Monitoring Dashboard" />}
+      header={<Header title="PCSpecTrack" icon={<img src="/assets/img/icon.png" alt="App icon" />} />}
       isLoading={loading || !devices}
     >
       <>
-        <h2 className="text-2xl font-bold mb-6">All Devices</h2>
+        <h2 className="text-2xl font-bold mb-6">My Devices</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {devices &&
@@ -56,8 +57,8 @@ function Dashboard() {
                 onClick={() => handleDeviceClick(device.id)}
               >
                 <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2">
-                    {device.name}
+                  <CardTitle className="flex items-center gap-3 items-center">
+                    <DeviceTypeIcon deviceType={device.type} className='h-6 w-6 text-[#4caf50]' /> {device.name}
                   </CardTitle>
                   <p className="text-sm text-gray-400">{device.platform}</p>
                 </CardHeader>

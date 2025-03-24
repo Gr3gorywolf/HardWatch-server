@@ -5,6 +5,7 @@ export const filterDeviceStatsData = (deviceStats: DeviceStats) => {
   return filterObject(deviceStats, [
     "id",
     "os",
+    "type",
     "actionables",
     "battery",
     "cpuUsage",
@@ -27,6 +28,7 @@ export const filterDeviceData = (deviceStats: DeviceStats) => {
   return filterObject(deviceStats, [
     "id",
     "platform",
+    "type",
     "name",
     "battery",
     "cpuUsage",
