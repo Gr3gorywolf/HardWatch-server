@@ -41,7 +41,12 @@ HardWatch-server/
 ## Installation
 
 ### Running from Release
-You can download the latest release from the [Releases page](https://github.com/Gr3gorywolf/HardWatch-server/releases/latest). This includes prebuilt binaries, so you only need to install dependencies and run:
+If you plan to host the app on linux/macos you can run this script that will assist you during the installation process
+```sh
+bash <(curl -s https://raw.githubusercontent.com/Gr3gorywolf/multi-devices-monitor/main/scripts/release-install.sh)
+```
+
+Alternatively you can download the latest release from the [Releases page](https://github.com/Gr3gorywolf/HardWatch-server/releases/latest). This includes prebuilt binaries, so you only need to install dependencies and run:
 ```sh
 npm install && node main.js
 ```
