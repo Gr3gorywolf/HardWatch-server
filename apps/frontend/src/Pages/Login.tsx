@@ -63,7 +63,7 @@ function Login() {
       <Card className="w-full max-w-md bg-[#2a2a2a] border-none shadow-lg">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-2">
-            <img src="/assets/img/icon.png" alt="App icon" className="h-12 w-12 object-cover text-[#4caf50]" />
+            <img src="https://gr3gorywolf.github.io/multi-devices-monitor/assets/img/icon.png" alt="App icon" className="h-12 w-12 object-cover text-[#4caf50]" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             PCSpecTrack

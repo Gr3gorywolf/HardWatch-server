@@ -42,7 +42,7 @@ function Dashboard() {
 
   return (
     <Page
-      header={<Header title="PCSpecTrack" icon={<img src="/assets/img/icon.png" alt="App icon" />} />}
+      header={<Header title="PCSpecTrack" icon={<img src="https://gr3gorywolf.github.io/multi-devices-monitor/assets/img/icon.png" alt="App icon" />} />}
       isLoading={loading || !devices}
     >
       <>
