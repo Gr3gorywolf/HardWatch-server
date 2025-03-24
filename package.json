@@ -1,7 +1,7 @@
 {
-  "name": "zepos-devices-monitor-backend",
+  "name": "HardWatch",
   "version": "1.0.0",
-  "description": "The backend for zepos devices monitor watch app",
+  "description": "HardWatch Monorepo",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

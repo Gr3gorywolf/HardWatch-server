@@ -66,7 +66,7 @@ function Login() {
             <img src="https://gr3gorywolf.github.io/multi-devices-monitor/assets/img/icon.png" alt="App icon" className="h-12 w-12 object-cover text-[#4caf50]" />
           </div>
           <CardTitle className="text-2xl font-bold text-center">
-            PCSpecTrack
+            HardWatch
           </CardTitle>
           <CardDescription className="text-center text-gray-400">
             Enter your App Key to access the monitoring dashboard
