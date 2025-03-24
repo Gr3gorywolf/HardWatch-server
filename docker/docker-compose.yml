@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    container_name: HardWatch-server
     build: .
     ports:
       - "3400:3400"
