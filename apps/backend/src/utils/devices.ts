@@ -1,7 +1,7 @@
-import {  DeviceStats } from "@types";
+import {   DeviceInfo, DeviceUsages } from "@types";
 import { filterObject } from "./filterObject";
 
-export const filterDeviceStatsData = (deviceStats: DeviceStats) => {
+export const filterDeviceStatsData = (deviceStats: DeviceInfo) => {
   return filterObject(deviceStats, [
     "id",
     "os",
@@ -20,16 +20,29 @@ export const filterDeviceStatsData = (deviceStats: DeviceStats) => {
     "isCharging",
     "name",
     "platform",
-    "disk"
+    "disk",
+    "services"
   ]);
 }
 
-export const filterDeviceData = (deviceStats: DeviceStats) => {
+export const filterDeviceInfo = (deviceStats: DeviceInfo) => {
   return filterObject(deviceStats, [
     "id",
     "platform",
     "type",
     "name",
+    "battery",
+    "cpuUsage",
+    "diskUsage",
+    "ramUsage",
+    "gpuUsage",
+    "isCharging",
+  ]);
+}
+
+
+export const filterDeviceUsages = (deviceUsages: DeviceUsages) => {
+  return filterObject(deviceUsages, [
     "battery",
     "cpuUsage",
     "diskUsage",

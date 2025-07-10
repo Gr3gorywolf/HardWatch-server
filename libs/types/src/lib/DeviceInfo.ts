@@ -1,15 +1,13 @@
 import { Device } from "./Device"
+import { Service } from "./Service"
 
-export type DeviceStats = Device & {
+export type DeviceInfo = Device & {
     os: string
     cpu: string
     gpu: string
-    ram: string
-    disk: string
-    cpuTemp: number | null
-    gpuTemp: number | null
     actionables: Array<{
         name: string
         action: string
     }>
+    services: Array<Service>
   }

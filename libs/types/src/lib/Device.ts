@@ -1,14 +1,9 @@
+import { DeviceUsages } from "./DeviceUsages";
 
 export type DeviceType = "desktop" | "laptop" | "handheld" | "server";
-export interface Device {
+export type  Device = DeviceUsages & {
     id: string
     name: string
     type: DeviceType
-    cpuUsage: number
-    gpuUsage: number
-    ramUsage: number
-    diskUsage: number
     platform: string
-    battery?: number,
-    isCharging?: boolean
   }

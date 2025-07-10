@@ -1,22 +1,14 @@
-import { DeviceStats } from "@types";
-import { APP_KEY, devices, devicesStats } from "../main";
+import { DeviceInfo, DeviceUsages } from "@types";
+import {  devices, devicesStats } from "../main";
 import { Router } from "express";
-import { filterDeviceData, filterDeviceStatsData } from "../utils/devices";
+import { filterDeviceInfo, filterDeviceStatsData, filterDeviceUsages } from "../utils/devices";
 const DevicesRouter = Router()
-
-DevicesRouter.use((req, res, next) => {
-  if (req.headers["appkey"] !== APP_KEY) {
-    res.status(403).json({ error: "Invalid appKey" });
-    return;
-  }
-  next();
-});
 /**
  * POST /send-stats-data
  * Receives device stats and stores them in memory.
  */
 DevicesRouter.post("/send-stats-data", (req, res) => {
-  const {id } = req.body as DeviceStats;
+  const {id } = req.body as DeviceInfo;
   if (!id) {
     res.status(400).json({ error: "Missing device id" });
     return;
@@ -27,11 +19,30 @@ DevicesRouter.post("/send-stats-data", (req, res) => {
 });
 
 /**
+ * POST /send-device-usage
+ * Receives device specific usage and stores them in memory.
+ */
+DevicesRouter.post("/send-device-usage", (req, res) => {
+  const {id } = req.body as DeviceUsages & { id: string };
+  if (!id) {
+    res.status(400).json({ error: "Missing device id" });
+    return;
+  }
+  if (!devicesStats.has(id)) {
+    res.status(404).json({ error: "Device not found" });
+    return;
+  }
+  const newUsages = filterDeviceUsages(req.body);
+  devicesStats.set(id, { ...devicesStats.get(id), ...newUsages });
+  res.json({ message: "Device stats saved" });
+});
+
+/**
  * GET /get-devices-stats
  * Returns summarized data of all devices.
  */
 DevicesRouter.get("/get-devices-stats", (req, res) => {
-  const devicesSummary = Array.from(devicesStats.values()).map((stat)=>filterDeviceData(stat));
+  const devicesSummary = Array.from(devicesStats.values()).map((stat)=>filterDeviceInfo(stat));
 
   res.json(devicesSummary);
 });

@@ -5,7 +5,9 @@ import fs from "fs";
 import cors from "cors";
 import path from "path";
 import DevicesRouter from "./routes/devices";
-import { DeviceStats } from "@types";
+import { DeviceInfo } from "@types";
+import { appKeyMiddleware } from "./middlewares/appKeyMiddleware";
+import ServicesRouter from "./routes/services";
 export const app = express();
 const server = http.createServer(app);
 const io = new socketIo.Server(server, {
@@ -21,7 +23,7 @@ const USE_FRONTEND_CDN = config.useFrontendCdn;
 let frontendPath = path.resolve("frontend");
 let indexHtmlFile = path.join(frontendPath, "index.html");
 export const devices = new Map<string, Socket>();
-export const devicesStats = new Map<string, DeviceStats>();
+export const devicesStats = new Map<string, DeviceInfo>();
 if (USE_FRONTEND_CDN || !fs.existsSync(indexHtmlFile)) {
   frontendPath = path.resolve("assets");
   indexHtmlFile = path.join(frontendPath, "cdn-index.html");
@@ -47,7 +49,8 @@ io.use((socket, next) => {
   next();
 });
 // Devices routes
-app.use("/api/devices", DevicesRouter);
+app.use("/api/devices",appKeyMiddleware, DevicesRouter);
+app.use("/api/services",appKeyMiddleware, ServicesRouter);
 // Static serving
 app.use(express.static(frontendPath));
 app.get("*", (req, res) => {

@@ -1,34 +1,36 @@
-'use client';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from '../Components/ui/card';
-import { Progress } from '../Components/ui/progress';
-import {
-  Cpu,
-  HardDrive,
-  Server,
-  MemoryStickIcon as Memory,
-  BatteryFull,
-  BatteryCharging,
-} from 'lucide-react';
+/* eslint-disable @nx/enforce-module-boundaries */
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useGetDevices } from '../Hooks/useGetDevices';
 import { Page } from '../Components/Page';
 import { Header } from '../Components/Header';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { DeviceCard } from '../Components/DeviceCard';
+import { ExternalLink, Search } from 'lucide-react';
+import { DeviceServices } from '../Components/DeviceServices';
+import { useGetServices } from '../Hooks/useGetServices';
+import { debounce } from 'lodash';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../Components/ui/card';
 import { DeviceTypeIcon } from '../Components/DeviceTypeIcon';
+import { Button } from '../Components/ui/button';
 function Dashboard() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'stats' | 'services'>('stats');
+  const [searchTerm, setSearchTerm] = useState('');
   const { data: devices, isLoading: loading, error } = useGetDevices();
-
+  const handleSearch = debounce((value: string) => setSearchTerm(value), 10);
+  const {
+    data: serviceDevices,
+    isLoading: loadingServices,
+    error: servicesError,
+  } = useGetServices();
   const handleDeviceClick = (deviceId: string) => {
     navigate(`/device/${deviceId}`);
   };
-
-  console.log(error);
 
   useEffect(() => {
     if (!localStorage.getItem('appKey')) {
@@ -36,108 +38,186 @@ function Dashboard() {
     }
   }, []);
 
+  const filteredServices = useMemo(() => {
+    if (activeTab !== 'services') return serviceDevices;
+    const searchLower = searchTerm.toLowerCase();
+    return serviceDevices
+      ?.filter((service) => {
+        return (
+          service.name.toLowerCase().includes(searchLower) ||
+          service.services?.some(
+            (s) =>
+              s.name.toLowerCase().includes(searchLower) ||
+              s.port.toString().includes(searchLower)
+          )
+        );
+      })
+      .map((service) => {
+        return {
+          ...service,
+          services: service.services?.filter((s) => {
+            const searchLower = searchTerm.toLowerCase();
+            return (
+              s.name.toLowerCase().includes(searchLower) ||
+              s.port.toString().includes(searchLower)
+            );
+          }),
+        };
+      });
+  }, [searchTerm, serviceDevices]);
+
+  const filteredDevices = useMemo(() => {
+    if (activeTab !== 'stats') return devices;
+    return devices?.filter((device) => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        device.name.toLowerCase().includes(searchLower) ||
+        device.platform.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [searchTerm, devices]);
+
+  const handleSetActiveTab = (tab: 'stats' | 'services') => {
+    if (activeTab === tab) return;
+    setSearchTerm('');
+    setActiveTab(tab);
+  };
+
   if (error?.response?.status === 403) {
     return <Navigate to="/login" />;
   }
 
   return (
     <Page
-      header={<Header title="HardWatch" icon={<img src="https://gr3gorywolf.github.io/HardWatch-server/assets/img/icon.png" alt="App icon" />} />}
-      isLoading={loading || !devices}
+      header={
+        <Header
+          title="HardWatch"
+          showLogout
+          icon={
+            <img
+              src="https://gr3gorywolf.github.io/HardWatch-server/assets/img/icon.png"
+              alt="App icon"
+            />
+          }
+        />
+      }
+      isLoading={loading || loadingServices || !devices}
     >
       <>
-        <h2 className="text-2xl font-bold mb-6">My Devices</h2>
+        <div className="mb-6">
+          <div className="border-b border-[#444444] flex">
+            <button
+              className={`px-6 py-3 text-sm font-medium transition-all relative ${
+                activeTab === 'stats'
+                  ? 'text-[#4caf50]'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              onClick={() => {
+                handleSetActiveTab('stats');
+              }}
+            >
+              Statistics
+              {activeTab === 'stats' && (
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#4caf50]" />
+              )}
+            </button>
+            <button
+              className={`px-6 py-3 text-sm font-medium transition-all relative ${
+                activeTab === 'services'
+                  ? 'text-[#4caf50]'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+              onClick={() => handleSetActiveTab('services')}
+            >
+              Services
+              {activeTab === 'services' && (
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#4caf50]" />
+              )}
+            </button>
+          </div>
+        </div>
+        <div className="mb-4 relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder={
+              activeTab == 'services'
+                ? 'Search services by name, IP, or port...'
+                : 'Search devices by name or platform...'
+            }
+            className="w-full pl-10 pr-4 py-2 bg-[#333333] border border-[#444444] rounded-md focus:outline-none focus:ring-2 focus:ring-[#4caf50] text-white"
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
+        {devices && activeTab === 'stats' && (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredDevices?.map((device, index) => (
+                <DeviceCard
+                  device={device}
+                  onClick={() => handleDeviceClick(device.id)}
+                />
+              ))}
+            </div>
+            {filteredDevices?.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-400">
+                  No devices found matching your search
+                </p>
+              </div>
+            )}
+          </>
+        )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {devices &&
-            devices.map((device, index) => (
-              <Card
-                key={device.id || `device-${index}`}
-                className="bg-[#2a2a2a] border-none hover:bg-[#333333] transition-colors cursor-pointer"
-                onClick={() => handleDeviceClick(device.id)}
-              >
+        {serviceDevices && activeTab === 'services' && (
+          <div className="space-y-6">
+            {filteredServices?.map((device) => (
+              <Card key={device.id} className="bg-[#2a2a2a] border-none">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-3">
-                    <DeviceTypeIcon deviceType={device.type} className='h-6 w-6 text-[#4caf50]' /> {device.name}
+                    <DeviceTypeIcon
+                      deviceType={device.type}
+                      className="h-6 w-6 text-[#4caf50]"
+                    />
+                    {device.name}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-400 ml-1 hover:text-white hover:bg-[#4caf50]/20"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeviceClick(device.id);
+                      }}
+                    >
+                      <ExternalLink className="h-7 w-7" />
+                    </Button>
                   </CardTitle>
                   <p className="text-sm text-gray-400">{device.platform}</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="flex items-center gap-1">
-                          <Cpu className="h-4 w-4" /> CPU
-                        </span>
-                        <span>{Math.floor(device.cpuUsage)}%</span>
-                      </div>
-                      <Progress
-                        value={Math.floor(device.cpuUsage)}
-                        className="h-2 bg-gray-700"
-                        indicatorClassName="bg-[#4caf50]"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="flex items-center gap-1">
-                          <Server className="h-4 w-4" /> GPU
-                        </span>
-                        <span>{Math.floor(device.gpuUsage)}%</span>
-                      </div>
-                      <Progress
-                        value={Math.floor(device.gpuUsage)}
-                        className="h-2 bg-gray-700"
-                        indicatorClassName="bg-[#4caf50]"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="flex items-center gap-1">
-                          <Memory className="h-4 w-4" /> RAM
-                        </span>
-                        <span>{Math.floor(device.ramUsage)}%</span>
-                      </div>
-                      <Progress
-                        value={Math.floor(device.ramUsage)}
-                        className="h-2 bg-gray-700"
-                        indicatorClassName="bg-[#4caf50]"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="flex items-center gap-1">
-                          <HardDrive className="h-4 w-4" /> Disk
-                        </span>
-                        <span>{Math.floor(device.diskUsage)}%</span>
-                      </div>
-                      <Progress
-                        value={Math.floor(device.diskUsage)}
-                        className="h-2 bg-gray-700"
-                        indicatorClassName="bg-[#4caf50]"
-                      />
-                    </div>
-                    {device.battery && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="flex items-center gap-1">
-                            {device.isCharging? <BatteryCharging className="h-4 w-4" /> : <BatteryFull className="h-4 w-4" />} Battery
-                          </span>
-                          <span>{Math.floor(device.battery)}% {device.isCharging && "- AC"}</span>
-                        </div>
-                        <Progress
-                          value={Math.floor(device.battery)}
-                          className="h-2 bg-gray-700"
-                          indicatorClassName="bg-[#4caf50]"
-                        />
-                      </div>
-                    )}
-                  </div>
+                  {device.services && device.services.length > 0 ? (
+                    <DeviceServices services={device.services} />
+                  ) : (
+                    <p className="text-gray-400 text-center py-4">
+                      No services available for this device
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             ))}
-        </div>
+
+            {filteredServices?.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-400">
+                  No services found matching your search
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </>
     </Page>
   );

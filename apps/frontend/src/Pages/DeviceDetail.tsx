@@ -25,8 +25,9 @@ import { Header } from '../Components/Header';
 import { sendAction } from '../Api/endpoints/devicesApi';
 import { useState } from 'react';
 import { useToast } from '../Hooks/use-toast';
-import { Progress } from '../Components/ui/progress';
 import { DeviceTypeIcon } from '../Components/DeviceTypeIcon';
+import { DeviceServices } from '../Components/DeviceServices';
+import { useGetServices } from '../Hooks/useGetServices';
 
 export default function DeviceDetail() {
   const navigate = useNavigate();
@@ -45,16 +46,16 @@ export default function DeviceDetail() {
 
   const handleAction = async (action: string) => {
     setIsSendingAction(true);
-    try{
-       await sendAction(deviceStats?.id ?? "", action);
-       toast({
+    try {
+      await sendAction(deviceStats?.id ?? '', action);
+      toast({
         title: 'Action triggered',
         duration: 2000,
       });
-    }catch(e){
+    } catch (e) {
       toast({
         title: 'Failed to send action',
-        description: e?.message ?? "",
+        description: e?.message ?? '',
         duration: 2000,
         variant: 'destructive',
       });
@@ -90,7 +91,12 @@ export default function DeviceDetail() {
         <Header
           title={deviceStats?.name ?? 'Device Statistics'}
           subTitle={deviceStats?.os ?? ''}
-          icon={<DeviceTypeIcon deviceType={deviceStats?.type} className='h-7 w-7 text-[#4caf50]' />}
+          icon={
+            <DeviceTypeIcon
+              deviceType={deviceStats?.type}
+              className="h-7 w-7 text-[#4caf50]"
+            />
+          }
           handleBack={handleBack}
         />
       }
@@ -239,6 +245,22 @@ export default function DeviceDetail() {
             </div>
           </CardContent>
         </Card>
+        {/* Services Section */}
+        {deviceStats.services && deviceStats.services.length > 0 && (
+          <Card className="bg-[#2a2a2a] border-none mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Server className="h-5 w-5 text-[#4caf50]" />
+                Services
+              </CardTitle>
+              <CardDescription>Services running on this device</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DeviceServices
+                services={deviceStats.services}/>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Actionable Buttons */}
         {deviceStats.actionables && deviceStats.actionables.length > 0 && (
